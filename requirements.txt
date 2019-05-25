@@ -1,0 +1,3 @@
+-i https://pypi.org/simple
+aioconsole==0.1.14
+aiofiles==0.4.0

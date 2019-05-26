@@ -46,11 +46,11 @@ class ChatReader(object):
 
     def _get_ignored_users(self):
         raw_string = self.get_conf_value('ignored_users')
-        return [] if not raw_string else raw_string.upper().split(',')
+        return [] if not raw_string else raw_string.split(',')
 
     def _get_tags(self):
         raw_string = self.get_conf_value('search_words')
-        tags = [] if not raw_string else raw_string.upper().split(',')
+        tags = [] if not raw_string else raw_string.split(',')
         if not tags:
             self.logger.info('Searching tags are not set')
         return tags
@@ -154,8 +154,8 @@ class ChatReader(object):
                 if not line or line == '\n' or self.paused:
                     await aio.sleep(0.25)
                     continue
-                elif self.tags and any(s in line.upper() for s in self.tags) or '@From' in line:
-                    message = re.search(self.from_pattern, line)
+                elif self.tags and any(s.upper() in line.upper() for s in self.tags) or '@From' in line:
+                    message = re.search(self.from_pattern, line, flags=re.I)
                     if message:
                         data = message.groupdict()
                         name = data.get('name', None)

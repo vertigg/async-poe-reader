@@ -10,12 +10,10 @@ class Commands(object):
     
     def command(self, func):
         name = self._clean_cmd_name(func.__name__)
-        self.commands[func.__name__] = func
-        print(f'COMMAND {name} REGISTERED')
+        self.commands[name] = func
     
     def simple_command(self, func):
         name = self._clean_cmd_name(func.__name__)
         self.simple_commands[name] = func
-        print(f'SIMPLE COMMAND {name} REGISTERED')
 
 cmd = Commands()

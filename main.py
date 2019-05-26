@@ -19,7 +19,7 @@ class ClientPathNotSet(Exception):
 
 class ChatReader(object):
 
-    from_pattern = r'\@From\s(?P<guild>.*?)(?P<name>[^<]\w*):\s(?P<text>.*)'
+    from_pattern = r'(?P<guild><.*?>?)\s(?P<name>[^<]\w*)(?:\:\s)(?P<text>.*)'
 
     def __init__(self, *args, **kwargs):
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -36,6 +36,7 @@ class ChatReader(object):
 
         self.tags = self._get_tags()
         self.ignored_users = self._get_ignored_users()
+        self.logger.info('ChatReader is working')
     
     def _setup_tts_engine(self):
         self.engine = pyttsx3.init()
@@ -161,6 +162,7 @@ class ChatReader(object):
                         text = data.get('text', None)
                         if name and name not in self.ignored_users:
                             self.engine.say(text)
+                            self.logger.info(f'Matched message: {name}: {text}')
                             self.engine.runAndWait()
                     continue
 

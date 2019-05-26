@@ -8,6 +8,7 @@ import sys
 
 import aioconsole
 import aiofiles
+import pyttsx3
 
 from utils.commands import cmd
 
@@ -26,6 +27,7 @@ class ChatReader(object):
         self.logger.setLevel(logging.DEBUG)
 
         self.logger.info('Async ChatReader initializing...')
+        self._setup_tts_engine()
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
 
@@ -34,6 +36,12 @@ class ChatReader(object):
 
         self.tags = self._get_tags()
         self.ignored_users = self._get_ignored_users()
+    
+    def _setup_tts_engine(self):
+        self.engine = pyttsx3.init()
+        self.engine.setProperty('rate', 180)
+        self.engine.setProperty('volume', 1)
+        self.engine.setProperty('rate', 150)
 
     def _get_ignored_users(self):
         raw_string = self.get_conf_value('ignored_users')
@@ -145,15 +153,15 @@ class ChatReader(object):
                 if not line or line == '\n' or self.paused:
                     await aio.sleep(0.25)
                     continue
-                elif '@From' in line:
+                elif self.tags and any(s in line.upper() for s in self.tags) or '@From' in line:
                     message = re.search(self.from_pattern, line)
                     if message:
                         data = message.groupdict()
                         name = data.get('name', None)
+                        text = data.get('text', None)
                         if name and name not in self.ignored_users:
-                            self.logger.info(line)
-                elif self.tags and any(s in line.upper() for s in self.tags):
-                    self.logger.info(line)
+                            self.engine.say(text)
+                            self.engine.runAndWait()
                     continue
 
 

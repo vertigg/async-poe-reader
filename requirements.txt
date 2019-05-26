@@ -1,3 +1,6 @@
 -i https://pypi.org/simple
 aioconsole==0.1.14
 aiofiles==0.4.0
+pypiwin32==223 ; 'win32' in sys_platform
+pyttsx3==2.71
+pywin32==224

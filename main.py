@@ -1,4 +1,3 @@
-import argparse
 import asyncio as aio
 import configparser
 import logging
@@ -37,7 +36,7 @@ class ChatReader(object):
         self.tags = self._get_tags()
         self.ignored_users = self._get_ignored_users()
         self.logger.info('ChatReader is working')
-    
+
     def _setup_tts_engine(self):
         self.engine = pyttsx3.init()
         self.engine.setProperty('rate', 180)
@@ -46,7 +45,7 @@ class ChatReader(object):
 
     def _get_ignored_users(self):
         raw_string = self.get_conf_value('ignored_users')
-        return [] if not raw_string else raw_string.split(',')
+        return set() if not raw_string else set(raw_string.split(','))
 
     def _get_tags(self):
         raw_string = self.get_conf_value('search_words')
@@ -109,8 +108,8 @@ class ChatReader(object):
     @cmd.command
     def block(self, args):
         name = args[0]
-        if not name in self.ignored_users:
-            self.ignored_users.append(name)
+        if name not in self.ignored_users:
+            self.ignored_users.add(name)
             self.save_config()
             self.logger.info(f'User {name} ignored')
         else:
@@ -158,11 +157,11 @@ class ChatReader(object):
                     message = re.search(self.from_pattern, line, flags=re.I)
                     if message:
                         data = message.groupdict()
-                        name = data.get('name', None)
-                        text = data.get('text', None)
-                        if name and name not in self.ignored_users:
+                        name = data.get('name')
+                        text = data.get('text')
+                        if name not in self.ignored_users:
                             self.engine.say(text)
-                            self.logger.info(f'Matched message: {name}: {text}')
+                            self.logger.info('Matched message: %s: %s', name, text)
                             self.engine.runAndWait()
                     continue
 
